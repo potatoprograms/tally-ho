@@ -1,7 +1,7 @@
 # tally-ho
 Have you ever wanted to count the value of the contents of your files?  No? Well now you can!
 
-DOCUMENTATION:
+# DOCUMENTATION:
 Just call count_file with the following parameter:
 count_file({
   "mode": "ascii" or "alpha" (SEE BELOW),
