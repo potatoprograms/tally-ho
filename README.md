@@ -13,13 +13,13 @@ count_file({
 
 ---
 
-Modes:
+## Modes:
 
-ascii
+### ascii
     Counts every character in the file using its ASCII value.
     - Offsets are case-sensitive.
 
-alpha
+### alpha
     Counts letters based on their position in the alphabet (a=1, b=2, ..., z=26)
     and digits as their numeric value.
     - Letters are case-insensitive.
@@ -30,18 +30,18 @@ alpha
 
 ---
 
-Offsets:
+## Offsets:
 
 - Required dictionary parameter.
 - Each key represents a character or number string.
   Its value (integer) is added to the counted value.
   - Example: {"a": 5} in alpha mode → a = 1 + 5 = 6.
 
-Special keys:
+### Special keys:
 - ALL: applies the offset to every character.
 - OTHERWISE: applies the offset to any character not explicitly listed.
 
-Notes:
+### Notes:
 - In alpha mode with grouping=True, offsets apply only to the whole number,
   not to individual digits.
 - ASCII mode offsets are case-sensitive; alpha mode offsets are case-insensitive.
