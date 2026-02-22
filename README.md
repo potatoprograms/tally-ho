@@ -53,6 +53,16 @@ tally_file({
   not to individual digits.
 - ASCII mode offsets are case-sensitive; alpha mode offsets are case-insensitive.
 
+## TALLY GENERATION:
+- create_tally({  
+    "mode": "ascii" or "alpha",
+    "target": int,
+    "offsets": {...},
+    "length": int
+})  
+- this function will create a sequence of characters that when tally_file is used on the sequence with the same parameters, the target is the result
+- length is optional and advised against. It will control the length of the sequence however it often renders a target impossible.
+
 
 ## EXAMPLE/POSSIBLE USES:
 - Poor man's hash
