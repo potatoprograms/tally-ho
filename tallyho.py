@@ -1,3 +1,4 @@
+import string
 def apply_offsets(char, count, offsets):
     if char in offsets:
         count += offsets[char]
@@ -84,3 +85,27 @@ def tally_file(params):
     
     return modes[params["mode"]](file_contents, params["offsets"], grouping) + params['offsets'].get("SALT", 0)
 
+alpha_dict = {c: ord(c) - ord('a') + 1 for c in string.ascii_lowercase}
+alpha_dict.update({str(i): i for i in range(10)})
+
+ascii_dict = {c: ord(c) for c in string.printable}
+
+def tally_alpha(target, offsets):
+    pass
+
+def tally_ascii(target, offsets):
+    pass
+
+def create_tally(params):
+    if (
+        "offsets" not in params
+        or any(not isinstance(c, int) for c in params["offsets"].values())
+        or "mode" not in params
+        or params["mode"] not in modes
+        or "target" not in params
+        or not isinstance(params["target"], int)
+    ):
+        print("Invalid parameters.")
+        return
+    
+    
