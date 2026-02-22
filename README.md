@@ -51,3 +51,10 @@ count_file({
 - In alpha mode with grouping=True, offsets apply only to the whole number,
   not to individual digits.
 - ASCII mode offsets are case-sensitive; alpha mode offsets are case-insensitive.
+
+
+## EXAMPLE/POSSIBLE USES:
+- Poor man's hash
+- Analytical experiments
+- Flexible checksums
+- Seeds
