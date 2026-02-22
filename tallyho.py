@@ -86,6 +86,23 @@ def tally_file(params):
     
     return modes[params["mode"]](file_contents, params["offsets"], grouping) + params['offsets'].get("SALT", 0)
 
+def tally_text(params):
+    if (
+        "text" not in params
+        or "mode" not in params
+        or "offsets" not in params
+        or params["mode"] not in modes
+        or any(not isinstance(c, int) for c in params["offsets"].values())
+    ):
+        print("Invalid parameters.")
+        return
+
+
+    grouping = params.get("grouping", False)
+
+    
+    return modes[params["mode"]](params["text"], params["offsets"], grouping) + params['offsets'].get("SALT", 0)
+
 alpha_dict = {c: ord(c) - ord('a') + 1 for c in string.ascii_lowercase}
 alpha_dict.update({str(i): i for i in range(10)})
 
