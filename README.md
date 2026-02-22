@@ -45,6 +45,7 @@ count_file({
 - LETTER: applies the offset to any character that is a letter
 - NUMBER: applies the offset to any character that is a number
 - SYMBOL: applies the offset to any character that is neither a letter not a number
+- SALT: applies the offset to the final result
 - LETTER, NUMBER, and SYMBOL do not prevent OTHERWISE from activating
 
 ### Notes:
