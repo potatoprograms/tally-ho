@@ -90,24 +90,27 @@ alpha_dict.update({str(i): i for i in range(10)})
 
 ascii_dict = {c: ord(c) for c in string.printable}
 
-def max_terms_dp(target, values):
+def max_terms_dp(target, val_map):
+    items = list(val_map.items())  # list of (key, value) pairs
+
     dp = [-float('inf')] * (target + 1)
     dp[0] = 0
-    parent = [-1] * (target + 1)
+    parent = [None] * (target + 1)
 
     for i in range(1, target + 1):
-        for v in values:
+        for k, v in items:
             if v <= i and dp[i - v] + 1 > dp[i]:
                 dp[i] = dp[i - v] + 1
-                parent[i] = v
+                parent[i] = (k, v)
 
-    # Reconstruct
     if dp[target] < 0:
         return None
+
     result = []
     while target > 0:
-        result.append(parent[target])
-        target -= parent[target]
+        k, v = parent[target]
+        result.append(k)
+        target -= v
     return result
 
 def tally_alpha(target, offsets):
