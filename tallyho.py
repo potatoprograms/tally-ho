@@ -15,7 +15,7 @@ def apply_offsets(char, count, offsets):
         count += offsets["SYMBOL"]
 
     return count
-def ascii_count(s, offsets, **kwargs):
+def ascii_count(s, offsets, c):
     cnt = 0
     for char in s:
         cnt += ord(char)
@@ -111,7 +111,6 @@ def create_tally(params):
 
     val_map = create_modes[params["mode"]]
     
-    # apply offsets to get effective values for each character
     effective = {}
     for k in val_map:
         effective_val = apply_offsets(k, val_map[k], params["offsets"])
@@ -140,6 +139,9 @@ def create_tally(params):
             lo = (terms_left - 1) * min_val
             hi = (terms_left - 1) * max_val
             valid = [(k, v) for k, v in items if lo <= remaining - v <= hi]
+            if not valid:
+                print("Value is unreachable in the given number of terms")
+                return None
             k, v = random.choice(valid)
             result.append(k)
             remaining -= v
@@ -158,3 +160,83 @@ def create_tally(params):
             remaining -= v
 
     return ''.join(random.sample(result, len(result)))
+
+def generate_offsets(mode="alpha", n=10):
+    special_keys = ["ALL", "OTHERWISE", "NUMBER", "LETTER", "SYMBOL"]
+    
+    val_map = create_modes[mode]
+    char_keys = random.sample(list(val_map.keys()), min(n - len(special_keys), len(val_map)))
+    
+    offsets = {}
+    for k in special_keys:
+        offsets[k] = random.randint(0, 10)
+    for k in char_keys:
+        offsets[k] = random.randint(0, 10)
+    
+    return offsets
+
+def tests():
+    FILEPATH = "test.txt"
+    passed = 0
+    skipped = 0
+    failed = 0
+
+    for mode in ["alpha", "ascii"]:
+        for i in range(1, 1001):
+            for v in range(1, 11):
+                o = {}
+                x = create_tally({
+                    "mode": mode,
+                    "target": i,
+                    "offsets": o,
+                })
+                if x is None:
+                    skipped += 1
+                    continue
+
+                with open(FILEPATH, "w") as f:
+                    f.write(x)
+
+                result = tally_file({
+                    "path": FILEPATH,
+                    "offsets": o,
+                    "mode": mode
+                })
+
+                if result != i:
+                    print(f"FAIL — mode={mode}, target={i}, length={v}, got={result}, string={x}")
+                    failed += 1
+                else:
+                    print(f"PASS — mode={mode}, target={i}, length={v}, got={result}, string={x}")
+                    passed += 1
+    for mode in ["alpha", "ascii"]:
+        for i in range(1, 1001):
+            for v in range(1, 11):
+                o = generate_offsets(mode, 10)
+                x = create_tally({
+                    "mode": mode,
+                    "target": i,
+                    "offsets": o,
+                })
+                if x is None:
+                    skipped += 1
+                    continue
+
+                with open(FILEPATH, "w") as f:
+                    f.write(x)
+
+                result = tally_file({
+                    "path": FILEPATH,
+                    "offsets": o,
+                    "mode": mode
+                })
+
+                if result != i:
+                    print(f"FAIL — mode={mode}, target={i}, length={v}, got={result}, string={x}")
+                    failed += 1
+                else:
+                    print(f"PASS — mode={mode}, target={i}, length={v}, got={result}, string={x}")
+                    passed += 1
+    print(f"Done — passed: {passed}, skipped: {skipped}, failed: {failed}")
+
+tests()
