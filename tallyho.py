@@ -5,6 +5,13 @@ def apply_offsets(char, count, offsets):
         count += offsets["OTHERWISE"]
     if "ALL" in offsets:
         count += offsets["ALL"]
+    if "LETTER" in offsets and char.isalpha():
+        count += offsets["LETTER"]
+    elif "NUMBER" in offsets and char.isdigit():
+        count += offsets["NUMBER"]
+    elif "SYMBOL" in offsets and not char.isalpha() and not char.isdigit():
+        count += offsets["SYMBOL"]
+
     return count
 def ascii_count(s, offsets, **kwargs):
     cnt = 0
