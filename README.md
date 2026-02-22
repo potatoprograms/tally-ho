@@ -52,6 +52,8 @@ tally_file({
 - In alpha mode with grouping=True, offsets apply only to the whole number,
   not to individual digits.
 - ASCII mode offsets are case-sensitive; alpha mode offsets are case-insensitive.
+- Call tally_text to parse text instead of a file  
+      - "text" parameter replaces "path"
 
 ## TALLY GENERATION:
 - create_tally({  
