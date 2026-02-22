@@ -81,6 +81,6 @@ def count_file(params):
 
     grouping = params.get("grouping", False)
 
-    print(
-        modes[params["mode"]](file_contents, params["offsets"], grouping)
-    )
+    
+    return modes[params["mode"]](file_contents, params["offsets"], grouping) + params['offsets'].get("SALT", 0)
+    
