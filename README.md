@@ -39,7 +39,11 @@ count_file({
 
 ### Special keys:
 - ALL: applies the offset to every character.
-- OTHERWISE: applies the offset to any character not explicitly defined.
+- OTHERWISE: applies the offset to any character not explicitly individually defined.
+- LETTER: applies the offset to any character that is a letter
+- NUMBER: applies the offset to any character that is a number
+- SYMBOL: applies the offset to any character that is neither a letter not a number
+- LETTER, NUMBER, and SYMBOL do not prevent OTHERWISE from activating
 
 ### Notes:
 - In alpha mode with grouping=True, offsets apply only to the whole number,
