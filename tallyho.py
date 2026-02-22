@@ -239,4 +239,5 @@ def tests():
                     passed += 1
     print(f"Done — passed: {passed}, skipped: {skipped}, failed: {failed}")
 
-tests()
+if __name__ + "__main__":
+    tests()
