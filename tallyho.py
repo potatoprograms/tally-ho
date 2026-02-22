@@ -1,5 +1,5 @@
 import string
-from random import sample
+import random
 def apply_offsets(char, count, offsets):
     if char in offsets:
         count += offsets[char]
@@ -96,84 +96,6 @@ create_modes = {
     "ascii": ascii_dict
 }
 
-def max_terms_dp(target, val_map):
-    items = list(val_map.items())
-
-    dp = [-float('inf')] * (target + 1)
-    dp[0] = 0
-    parent = [None] * (target + 1)
-
-    for k, v in items:
-        for i in range(target, v - 1, -1):
-            if dp[i - v] + 1 > dp[i]:
-                dp[i] = dp[i - v] + 1
-                parent[i] = (k, v)
-
-    # find the best reachable value we can top up from
-    best = max(range(target + 1), key=lambda i: dp[i] if dp[i] > -float('inf') else -float('inf'))
-
-    result = []
-    remaining = best
-    while remaining > 0:
-        k, v = parent[remaining]
-        result.append(k)
-        remaining -= v
-
-    remaining = target - best
-    for k, v in sorted(items, key=lambda x: x[1]):  # smallest value first for flexibility
-        while remaining >= v:
-            result.append(k)
-            remaining -= v
-
-    if remaining != 0:
-        return None  # impossible even with repeats
-
-    return result
-
-def exact_terms_dp(target, val_map, n):
-    items = list(val_map.items())
-
-    # dp[i][j] = True if value i is reachable in exactly j unique keys
-    dp = [[False] * (n + 1) for _ in range(target + 1)]
-    dp[0][0] = True
-    parent = [[None] * (n + 1) for _ in range(target + 1)]
-
-    for k, v in items:
-        for i in range(target, v - 1, -1):
-            for j in range(n, 0, -1):
-                if dp[i - v][j - 1] and not dp[i][j]:
-                    dp[i][j] = True
-                    parent[i][j] = (k, v)
-
-    best_val, best_j = 0, 0
-    for i in range(target + 1):
-        for j in range(n + 1):
-            if dp[i][j] and j > best_j:
-                best_val, best_j = i, j
-
-    # reconstruct unique portion
-    result = []
-    remaining = target - best_val
-    terms_left = n - best_j
-    i, j = best_val, best_j
-    while i > 0:
-        k, v = parent[i][j]
-        result.append(k)
-        i -= v
-        j -= 1
-
-    filled = False
-    for k, v in sorted(items, key=lambda x: x[1]):
-        if remaining % v == 0 and remaining // v == terms_left:
-            for _ in range(terms_left):
-                result.append(k)
-            filled = True
-            break
-
-    if not filled and remaining > 0:
-        return None  # impossible to hit exact n terms
-
-    return result
 
 def create_tally(params):
     if (
@@ -186,10 +108,53 @@ def create_tally(params):
     ):
         print("Invalid parameters.")
         return
+
+    val_map = create_modes[params["mode"]]
     
+    # apply offsets to get effective values for each character
+    effective = {}
+    for k in val_map:
+        effective_val = apply_offsets(k, val_map[k], params["offsets"])
+        if effective_val > 0:
+            effective[k] = effective_val
+
+    if not effective:
+        print("No usable characters after applying offsets")
+        return None
+
+    items = sorted(effective.items(), key=lambda x: x[1], reverse=True)
+    min_val = min(v for _, v in items)
+    max_val = max(v for _, v in items)
+    target = params["target"]
+
     if "length" in params and isinstance(params["length"], int):
-        x = exact_terms_dp(params["target"], create_modes[params["mode"]], params["length"])
+        n = params["length"]
+        if target < n * min_val or target > n * max_val:
+            print("Value is unreachable in the given number of terms")
+            return None
+
+        result = []
+        remaining = target
+        for step in range(n):
+            terms_left = n - step
+            lo = (terms_left - 1) * min_val
+            hi = (terms_left - 1) * max_val
+            valid = [(k, v) for k, v in items if lo <= remaining - v <= hi]
+            k, v = random.choice(valid)
+            result.append(k)
+            remaining -= v
+
     else:
-        x = max_terms_dp(params['target'], create_modes[params["mode"]])
-    return ''.join(sample(x, len(x)))
-    
+        result = []
+        remaining = target
+        while remaining > 0:
+            valid = [(k, v) for k, v in items if v <= remaining]
+            if not valid:
+                print("Value is unreachable")
+                return None
+            weights = [v ** 2 for _, v in valid]
+            k, v = random.choices(valid, weights=weights, k=1)[0]
+            result.append(k)
+            remaining -= v
+
+    return ''.join(random.sample(result, len(result)))
