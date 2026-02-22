@@ -141,7 +141,7 @@ def create_tally(params):
     items = sorted(effective.items(), key=lambda x: x[1], reverse=True)
     min_val = min(v for _, v in items)
     max_val = max(v for _, v in items)
-    target = params["target"] + params["offsets"].get("SALT", 0)
+    target = params["target"] - params["offsets"].get("SALT", 0)
 
     if "length" in params and isinstance(params["length"], int):
         n = params["length"]
