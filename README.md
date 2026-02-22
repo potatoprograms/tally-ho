@@ -4,7 +4,7 @@ Have you ever wanted to count the value of the contents of your files?  No? Well
 
 Call the function like this:
 
-count_file({  
+tally_file({  
     "mode": "ascii" or "alpha",  # see Modes  
     "path": FILEPATH,  
     "offsets": { ... },          # see Offsets  

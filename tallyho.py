@@ -65,7 +65,7 @@ modes = {
     "alpha": alphabet_count
 }
 
-def count_file(params):
+def tally_file(params):
     if (
         "path" not in params
         or "mode" not in params
@@ -83,4 +83,4 @@ def count_file(params):
 
     
     return modes[params["mode"]](file_contents, params["offsets"], grouping) + params['offsets'].get("SALT", 0)
-    
+
