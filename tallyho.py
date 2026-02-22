@@ -21,7 +21,6 @@ def ascii_count(s, offsets, **kwargs):
         
     return cnt
 
-letters = "abcdefghijklmnopqrstuvwxyz"
 def alphabet_count(s, offsets, grouping=False):
     cnt = 0
     s = s.lower()
