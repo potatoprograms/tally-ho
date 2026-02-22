@@ -16,17 +16,19 @@ count_file({
 ## Modes:
 
 ### ascii
-    Counts every character in the file using its ASCII value.
-    - Offsets are case-sensitive.
+
+- Counts every character in the file using its ASCII value.  
+- Offsets are case-sensitive.  
 
 ### alpha
-    Counts letters based on their position in the alphabet (a=1, b=2, ..., z=26)
-    and digits as their numeric value.
-    - Letters are case-insensitive.
-    - Optional grouping=True: consecutive digits are treated as a single number
-      (e.g., 123 counts as 123).
-    - Optional grouping=False: digits are counted individually
-      (e.g., 123 counts as [1, 2, 3]).
+
+- Counts letters based on their position in the alphabet (a=1, b=2, ..., z=26)  
+    and digits as their numeric value.  
+- Letters are case-insensitive.  
+- Optional grouping=True: consecutive digits are treated as a single number  
+      - (e.g., 123 counts as 123).  
+- Optional grouping=False: digits are counted individually  
+      - (e.g., 123 counts as [1, 2, 3]).  
 
 
 
