@@ -1,4 +1,5 @@
 import string
+from random import sample
 def apply_offsets(char, count, offsets):
     if char in offsets:
         count += offsets[char]
@@ -90,34 +91,89 @@ alpha_dict.update({str(i): i for i in range(10)})
 
 ascii_dict = {c: ord(c) for c in string.printable}
 
+create_modes = {
+    "alpha": alpha_dict,
+    "ascii": ascii_dict
+}
+
 def max_terms_dp(target, val_map):
-    items = list(val_map.items())  # list of (key, value) pairs
+    items = list(val_map.items())
 
     dp = [-float('inf')] * (target + 1)
     dp[0] = 0
     parent = [None] * (target + 1)
 
-    for i in range(1, target + 1):
-        for k, v in items:
-            if v <= i and dp[i - v] + 1 > dp[i]:
+    for k, v in items:
+        for i in range(target, v - 1, -1):
+            if dp[i - v] + 1 > dp[i]:
                 dp[i] = dp[i - v] + 1
                 parent[i] = (k, v)
 
-    if dp[target] < 0:
-        return None
+    # find the best reachable value we can top up from
+    best = max(range(target + 1), key=lambda i: dp[i] if dp[i] > -float('inf') else -float('inf'))
 
     result = []
-    while target > 0:
-        k, v = parent[target]
+    remaining = best
+    while remaining > 0:
+        k, v = parent[remaining]
         result.append(k)
-        target -= v
+        remaining -= v
+
+    remaining = target - best
+    for k, v in sorted(items, key=lambda x: x[1]):  # smallest value first for flexibility
+        while remaining >= v:
+            result.append(k)
+            remaining -= v
+
+    if remaining != 0:
+        return None  # impossible even with repeats
+
     return result
 
-def tally_alpha(target, offsets):
-    pass
+def exact_terms_dp(target, val_map, n):
+    items = list(val_map.items())
 
-def tally_ascii(target, offsets):
-    pass
+    # dp[i][j] = True if value i is reachable in exactly j unique keys
+    dp = [[False] * (n + 1) for _ in range(target + 1)]
+    dp[0][0] = True
+    parent = [[None] * (n + 1) for _ in range(target + 1)]
+
+    for k, v in items:
+        for i in range(target, v - 1, -1):
+            for j in range(n, 0, -1):
+                if dp[i - v][j - 1] and not dp[i][j]:
+                    dp[i][j] = True
+                    parent[i][j] = (k, v)
+
+    best_val, best_j = 0, 0
+    for i in range(target + 1):
+        for j in range(n + 1):
+            if dp[i][j] and j > best_j:
+                best_val, best_j = i, j
+
+    # reconstruct unique portion
+    result = []
+    remaining = target - best_val
+    terms_left = n - best_j
+    i, j = best_val, best_j
+    while i > 0:
+        k, v = parent[i][j]
+        result.append(k)
+        i -= v
+        j -= 1
+
+    filled = False
+    for k, v in sorted(items, key=lambda x: x[1]):
+        if remaining % v == 0 and remaining // v == terms_left:
+            for _ in range(terms_left):
+                result.append(k)
+            filled = True
+            break
+
+    if not filled and remaining > 0:
+        return None  # impossible to hit exact n terms
+
+    return result
 
 def create_tally(params):
     if (
@@ -131,4 +187,9 @@ def create_tally(params):
         print("Invalid parameters.")
         return
     
+    if "length" in params and isinstance(params["length"], int):
+        x = exact_terms_dp(params["target"], create_modes[params["mode"]], params["length"])
+    else:
+        x = max_terms_dp(params['target'], create_modes[params["mode"]])
+    return ''.join(sample(x, len(x)))
     
